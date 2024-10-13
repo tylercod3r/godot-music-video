@@ -1,0 +1,142 @@
+[gd_scene load_steps=16 format=3 uid="uid://bj4gpou1y72ex"]
+
+[ext_resource type="Script" path="res://scripts/main-controller.gd" id="1_2sl5s"]
+[ext_resource type="AudioStream" uid="uid://b4n4hcinxc4pb" path="res://assets/music/iffiii--new-dnb-v1.mp3" id="2_xgi2y"]
+[ext_resource type="Shader" path="res://shaders/ripple.gdshader" id="3_f4l21"]
+[ext_resource type="Shader" path="res://shaders/radial.gdshader" id="3_jj8qv"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_s340l"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_m80a6"]
+sky_material = SubResource("ProceduralSkyMaterial_s340l")
+
+[sub_resource type="Environment" id="Environment_sg55c"]
+sky = SubResource("Sky_m80a6")
+tonemap_mode = 2
+ssr_enabled = true
+ssao_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+glow_enabled = true
+
+[sub_resource type="Animation" id="Animation_382cc"]
+resource_name = "new_animation"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_7bo0g"]
+_data = {
+"new_animation": SubResource("Animation_382cc")
+}
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y6wwj"]
+metallic = 0.5
+
+[sub_resource type="Gradient" id="Gradient_hdd7i"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_1wj5f"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_nfy7d"]
+seamless = true
+color_ramp = SubResource("Gradient_hdd7i")
+noise = SubResource("FastNoiseLite_1wj5f")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_20lon"]
+shader = ExtResource("3_f4l21")
+shader_parameter/frequency = 4.0
+shader_parameter/amplitude = 2.0
+shader_parameter/ripple_rate = 5.0
+shader_parameter/wave_amplitude = 0.05
+shader_parameter/wave_frequency = 4.0
+shader_parameter/noise = SubResource("NoiseTexture2D_nfy7d")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_f8aco"]
+shader = ExtResource("3_jj8qv")
+shader_parameter/amount = 0.0
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_2sl5s")
+
+[node name="Music" type="Node" parent="."]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Music"]
+stream = ExtResource("2_xgi2y")
+
+[node name="World" type="Node" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="World"]
+environment = SubResource("Environment_sg55c")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="World"]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+light_color = Color(0.435294, 0.521569, 0.862745, 1)
+light_indirect_energy = 8.0
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="World"]
+libraries = {
+"": SubResource("AnimationLibrary_7bo0g")
+}
+
+[node name="CSGBox3D" type="CSGBox3D" parent="World"]
+material = SubResource("StandardMaterial3D_y6wwj")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="World"]
+
+[node name="UI" type="Node" parent="."]
+
+[node name="CenterContainer" type="CenterContainer" parent="UI"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="UI/CenterContainer"]
+
+[node name="ColorRect" type="ColorRect" parent="UI/CenterContainer/CanvasLayer"]
+material = SubResource("ShaderMaterial_20lon")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect2" type="ColorRect" parent="UI/CenterContainer/CanvasLayer"]
+material = SubResource("ShaderMaterial_f8aco")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/CenterContainer/CanvasLayer"]
+offset_right = 1152.0
+offset_bottom = 334.0
+
+[node name="Label" type="Label" parent="UI/CenterContainer/CanvasLayer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "test"
+metadata/_edit_use_anchors_ = true
+
+[node name="Label2" type="Label" parent="UI/CenterContainer/CanvasLayer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "test2"
+
+[node name="PanelContainer" type="PanelContainer" parent="UI/CenterContainer/CanvasLayer"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -173.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Button" type="Button" parent="UI/CenterContainer/CanvasLayer/PanelContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 120
+text = "start"
+
+[connection signal="pressed" from="UI/CenterContainer/CanvasLayer/PanelContainer/Button" to="." method="_on_button_pressed"]
