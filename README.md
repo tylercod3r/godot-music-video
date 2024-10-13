@@ -1,2 +1,2 @@
 # godot-music-video
-Experiment to sync audio + animations in Godot.
+Experiment to sync music + animations in Godot.
