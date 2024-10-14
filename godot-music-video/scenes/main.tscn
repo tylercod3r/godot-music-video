@@ -1,9 +1,10 @@
-[gd_scene load_steps=16 format=3 uid="uid://bj4gpou1y72ex"]
+[gd_scene load_steps=21 format=3 uid="uid://bj4gpou1y72ex"]
 
 [ext_resource type="Script" path="res://scripts/main-controller.gd" id="1_2sl5s"]
 [ext_resource type="AudioStream" uid="uid://b4n4hcinxc4pb" path="res://assets/music/iffiii--new-dnb-v1.mp3" id="2_xgi2y"]
 [ext_resource type="Shader" path="res://shaders/radial.gdshader" id="3_jj8qv"]
 [ext_resource type="Shader" path="res://shaders/vignette.gdshader" id="4_1vr0w"]
+[ext_resource type="Shader" path="res://shaders/glitch.gdshader" id="5_7h1s4"]
 [ext_resource type="Theme" uid="uid://0yjds1juqap4" path="res://themes/app_theme.tres" id="5_h2gwk"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_s340l"]
@@ -41,6 +42,42 @@ emission_enabled = true
 emission = Color(0.04, 0.04, 1, 1)
 emission_energy_multiplier = 6.0
 
+[sub_resource type="Animation" id="Animation_8iupb"]
+resource_name = "show_labels_anim"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CenterContainer/CanvasLayer2/VBoxContainer:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.5, 0.5),
+"update": 0,
+"values": [Vector2(-332, 0), Vector2(30, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_7dmlq"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CenterContainer/CanvasLayer2/VBoxContainer:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-332, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_vg77w"]
+_data = {
+"RESET": SubResource("Animation_7dmlq"),
+"show_labels_anim": SubResource("Animation_8iupb")
+}
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_20lon"]
 shader = ExtResource("3_jj8qv")
 shader_parameter/max_drag_distance = 0.692
@@ -54,6 +91,14 @@ shader_parameter/inner_radius = 0.5
 shader_parameter/outer_radius = 1.1
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dmta4"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_le7fq"]
+shader = ExtResource("5_7h1s4")
+shader_parameter/shake_power = 0.03
+shader_parameter/shake_rate = 0.2
+shader_parameter/shake_speed = 5.0
+shader_parameter/shake_block_size = 30.5
+shader_parameter/shake_color_rate = 0.01
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_2sl5s")
@@ -95,13 +140,19 @@ spot_attenuation = -7.55
 
 [node name="UI" type="Node" parent="."]
 
+[node name="UIFadeInAnimation" type="AnimationPlayer" parent="UI"]
+reset_on_save = false
+libraries = {
+"": SubResource("AnimationLibrary_vg77w")
+}
+
 [node name="CenterContainer" type="CenterContainer" parent="UI"]
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="CanvasLayer" type="CanvasLayer" parent="UI/CenterContainer"]
+[node name="CanvasLayer1" type="CanvasLayer" parent="UI/CenterContainer"]
 
-[node name="ColorRect" type="ColorRect" parent="UI/CenterContainer/CanvasLayer"]
+[node name="ColorRect" type="ColorRect" parent="UI/CenterContainer/CanvasLayer1"]
 material = SubResource("ShaderMaterial_20lon")
 anchors_preset = 15
 anchor_right = 1.0
@@ -109,7 +160,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ColorRect2" type="ColorRect" parent="UI/CenterContainer/CanvasLayer"]
+[node name="ColorRect2" type="ColorRect" parent="UI/CenterContainer/CanvasLayer1"]
 material = SubResource("ShaderMaterial_f8aco")
 anchors_preset = 15
 anchor_right = 1.0
@@ -118,22 +169,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(1, 1, 0.588235, 1)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/CenterContainer/CanvasLayer"]
-offset_right = 1152.0
-offset_bottom = 334.0
-
-[node name="Label" type="Label" parent="UI/CenterContainer/CanvasLayer/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 80
-text = "test"
-metadata/_edit_use_anchors_ = true
-
-[node name="Label2" type="Label" parent="UI/CenterContainer/CanvasLayer/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 80
-text = "test2"
-
-[node name="PanelContainer" type="PanelContainer" parent="UI/CenterContainer/CanvasLayer"]
+[node name="PanelContainer" type="PanelContainer" parent="UI/CenterContainer/CanvasLayer1"]
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
@@ -144,9 +180,34 @@ grow_vertical = 0
 theme = ExtResource("5_h2gwk")
 theme_override_styles/panel = SubResource("StyleBoxEmpty_dmta4")
 
-[node name="Button" type="Button" parent="UI/CenterContainer/CanvasLayer/PanelContainer"]
+[node name="Button" type="Button" parent="UI/CenterContainer/CanvasLayer1/PanelContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 60
 text = "start"
 
-[connection signal="pressed" from="UI/CenterContainer/CanvasLayer/PanelContainer/Button" to="." method="_on_button_pressed"]
+[node name="CanvasLayer2" type="CanvasLayer" parent="UI/CenterContainer"]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/CenterContainer/CanvasLayer2"]
+offset_left = -332.0
+offset_right = 896.0
+offset_bottom = 334.0
+
+[node name="Label" type="Label" parent="UI/CenterContainer/CanvasLayer2/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 60
+text = "test"
+metadata/_edit_use_anchors_ = true
+
+[node name="Label2" type="Label" parent="UI/CenterContainer/CanvasLayer2/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 60
+text = "test2"
+
+[node name="ColorRect" type="ColorRect" parent="UI/CenterContainer/CanvasLayer2"]
+material = SubResource("ShaderMaterial_le7fq")
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 181.0
+grow_vertical = 2
+
+[connection signal="pressed" from="UI/CenterContainer/CanvasLayer1/PanelContainer/Button" to="." method="_on_button_pressed"]

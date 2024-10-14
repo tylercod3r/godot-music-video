@@ -1,16 +1,20 @@
 class_name GameController extends Node3D
 
+# song length = 704 beats
+
 #region VARIABLE
 @onready var audio_stream_player: AudioStreamPlayer = $Music/AudioStreamPlayer
 @onready var csg_box_3d: CSGBox3D = $World/CSGBox3D
-@onready var label: Label = $UI/CenterContainer/CanvasLayer/VBoxContainer/Label
-@onready var label_2: Label = $UI/CenterContainer/CanvasLayer/VBoxContainer/Label2
+@onready var label: Label = $UI/CenterContainer/CanvasLayer2/VBoxContainer/Label
+@onready var label_2: Label = $UI/CenterContainer/CanvasLayer2/VBoxContainer/Label2
+@onready var ui_fade_in_animation: AnimationPlayer = $UI/UIFadeInAnimation
 
 const BPM = 180
 const BARS = 4
 
 const COMPENSATE_FRAMES = 2
 const COMPENSATE_HZ = 60.0
+const FADE_IN_UI_ANIMATION = "show_labels_anim"
 
 enum SyncSource {
 	SYSTEM_CLOCK,
@@ -19,6 +23,8 @@ enum SyncSource {
 
 var scale_tween_normal:Tween
 var scale_tween_large:Tween
+var rotate_x_left_tween:Tween
+var rotate_x_right_tween:Tween
 var rotate_y_left_tween:Tween
 var rotate_y_right_tween:Tween
 var rotate_xy_tween:Tween
@@ -54,7 +60,7 @@ func _on_PlaySystem_pressed():
 	time_delay = AudioServer.get_time_to_next_mix() + AudioServer.get_output_latency()
 	playing = true
 	audio_stream_player.play()
-
+	intUI()
 
 func _on_PlaySound_pressed():
 	sync_source = SyncSource.SOUND_CLOCK
@@ -67,51 +73,80 @@ func _on_button_pressed() -> void:
 #endregion
 
 #region METHOD - UTIL
+func intUI() -> void:
+	ui_fade_in_animation.current_animation = FADE_IN_UI_ANIMATION
+	ui_fade_in_animation.play()
+
 func init_tweens() -> void:
+	# scale-tween-normal ###########################################
 	scale_tween_normal = TweenNode.create_reusable_tween()
 	var scale_val = 1.0
 	scale_tween_normal.tween_property(csg_box_3d, "scale", Vector3(scale_val, scale_val, scale_val), 0.1)
 	
+	# scale-tween-large ############################################
 	scale_tween_large = TweenNode.create_reusable_tween()
 	scale_val = 1.25
 	scale_tween_large.tween_property(csg_box_3d, "scale", Vector3(scale_val, scale_val, scale_val), 0.3)
 
-	rotate_y_left_tween = TweenNode.create_reusable_tween()
-	var x_degrees: float = 0 
-	var y_degrees: float = -45
+	# rotate-x-left ################################################
+	rotate_x_left_tween = TweenNode.create_reusable_tween()
+	
+	var x_degrees: float = -360 
+	var y_degrees: float = 0
 	var z_degrees: float = 0
 
-	# put degrees in Vector3
 	var target_rotation = Vector3(
+		deg_to_rad(x_degrees),
+		deg_to_rad(y_degrees),
+		deg_to_rad(z_degrees)
+	)
+	rotate_x_left_tween.tween_property(csg_box_3d, "rotation", target_rotation, 0.3).as_relative()
+	
+	# rotate-x-right ###############################################
+	rotate_x_right_tween = TweenNode.create_reusable_tween()
+	x_degrees = 360 
+	y_degrees = 0
+	z_degrees = 0
+
+	target_rotation = Vector3(
+		deg_to_rad(x_degrees),
+		deg_to_rad(y_degrees),
+		deg_to_rad(z_degrees)
+	)
+	rotate_x_right_tween.tween_property(csg_box_3d, "rotation", target_rotation, 0.3).as_relative()
+
+	# rotate-y-left ################################################
+	rotate_y_left_tween = TweenNode.create_reusable_tween()
+	x_degrees = 0 
+	y_degrees = -45
+	z_degrees = 0
+
+	target_rotation = Vector3(
 		deg_to_rad(x_degrees),
 		deg_to_rad(y_degrees),
 		deg_to_rad(z_degrees)
 	)
 	rotate_y_left_tween.tween_property(csg_box_3d, "rotation", target_rotation, 0.1).as_relative()
 	
-	################################################
+	# rotate-y-right ###############################################
 	rotate_y_right_tween = TweenNode.create_reusable_tween()
 	x_degrees = 0 
 	y_degrees = 45
 	z_degrees = 0
 
-	# put degrees in Vector3
 	target_rotation = Vector3(
 		deg_to_rad(x_degrees),
 		deg_to_rad(y_degrees),
 		deg_to_rad(z_degrees)
 	)
 	rotate_y_right_tween.tween_property(csg_box_3d, "rotation", target_rotation, 0.1).as_relative()
-	################################################
 	
-	
-
+	# rotate-xy ####################################################
 	rotate_xy_tween = TweenNode.create_reusable_tween()
-	x_degrees = -720 
+	x_degrees = -360 
 	y_degrees = 45
 	z_degrees = 0
 
-	# put degrees in Vector3
 	target_rotation = Vector3(
 		deg_to_rad(x_degrees),
 		deg_to_rad(y_degrees),
@@ -151,15 +186,20 @@ func handle_beat(beat_number):
 		4: 
 			color = Color(0, 0, 1, 1)
 			scale_tween_large.play()
-			
-			if (beat_number + 1) % 16 == 0:
-				rotate_xy_tween.play()
-			else:
+
+			if (beat_number + 1) % 32 == 0:
 				if randf() < 0.5:
-					rotate_y_left_tween.play()
+					rotate_x_left_tween.play()
 				else:
-					rotate_y_right_tween.play()
-				
+					rotate_x_right_tween.play()
+			else:
+				if (beat_number + 1) % 16 == 0:
+					rotate_xy_tween.play()
+				else:
+					if randf() < 0.5:
+						rotate_y_left_tween.play()
+					else:
+						rotate_y_right_tween.play()
 	
 	csg_box_3d.material.albedo_color = color
 
