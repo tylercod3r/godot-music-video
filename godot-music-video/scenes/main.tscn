@@ -1,11 +1,16 @@
-[gd_scene load_steps=21 format=3 uid="uid://bj4gpou1y72ex"]
+[gd_scene load_steps=26 format=3 uid="uid://bj4gpou1y72ex"]
 
 [ext_resource type="Script" path="res://scripts/main-controller.gd" id="1_2sl5s"]
+[ext_resource type="Script" path="res://scripts/manager/ui_manager.gd" id="2_b5m0v"]
 [ext_resource type="AudioStream" uid="uid://b4n4hcinxc4pb" path="res://assets/music/iffiii--new-dnb-v1.mp3" id="2_xgi2y"]
 [ext_resource type="Shader" path="res://shaders/radial.gdshader" id="3_jj8qv"]
+[ext_resource type="Script" path="res://scripts/manager/signal_manager.gd" id="3_kexe0"]
 [ext_resource type="Shader" path="res://shaders/vignette.gdshader" id="4_1vr0w"]
+[ext_resource type="Script" path="res://scripts/manager/music_manager.gd" id="4_8xiw3"]
+[ext_resource type="Script" path="res://scripts/manager/tween_manager.gd" id="5_4yxqp"]
 [ext_resource type="Shader" path="res://shaders/glitch.gdshader" id="5_7h1s4"]
 [ext_resource type="Theme" uid="uid://0yjds1juqap4" path="res://themes/app_theme.tres" id="5_h2gwk"]
+[ext_resource type="Script" path="res://scripts/manager/mesh_manager.gd" id="6_e2gjd"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_s340l"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -15,6 +20,7 @@ ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
 sky_material = SubResource("ProceduralSkyMaterial_s340l")
 
 [sub_resource type="Environment" id="Environment_sg55c"]
+background_mode = 2
 sky = SubResource("Sky_m80a6")
 ambient_light_color = Color(1, 0, 0, 1)
 tonemap_mode = 3
@@ -24,8 +30,10 @@ ssil_enabled = true
 sdfgi_enabled = true
 glow_enabled = true
 glow_bloom = 1.0
+fog_light_energy = 13.0
 
 [sub_resource type="Environment" id="Environment_xh2lt"]
+background_mode = 1
 
 [sub_resource type="Animation" id="Animation_382cc"]
 resource_name = "new_animation"
@@ -35,27 +43,10 @@ _data = {
 "new_animation": SubResource("Animation_382cc")
 }
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y6wwj"]
-metallic = 0.98
-metallic_specular = 0.88
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jewe4"]
+albedo_color = Color(0.0705882, 0.184314, 1, 1)
 emission_enabled = true
-emission = Color(0.04, 0.04, 1, 1)
-emission_energy_multiplier = 6.0
-
-[sub_resource type="Animation" id="Animation_8iupb"]
-resource_name = "show_labels_anim"
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("CenterContainer/CanvasLayer2/VBoxContainer:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(0.5, 0.5),
-"update": 0,
-"values": [Vector2(-332, 0), Vector2(30, 0)]
-}
+emission = Color(0.0352941, 0.592157, 0.811765, 1)
 
 [sub_resource type="Animation" id="Animation_7dmlq"]
 length = 0.001
@@ -72,6 +63,21 @@ tracks/0/keys = {
 "values": [Vector2(-332, 0)]
 }
 
+[sub_resource type="Animation" id="Animation_8iupb"]
+resource_name = "show_labels_anim"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CenterContainer/CanvasLayer2/VBoxContainer:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.5, 0.5),
+"update": 0,
+"values": [Vector2(-332, 0), Vector2(30, 0)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_vg77w"]
 _data = {
 "RESET": SubResource("Animation_7dmlq"),
@@ -86,7 +92,7 @@ shader_parameter/contrast = 1.912
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_f8aco"]
 shader = ExtResource("4_1vr0w")
-shader_parameter/alpha = 1.0
+shader_parameter/alpha = 0.5
 shader_parameter/inner_radius = 0.5
 shader_parameter/outer_radius = 1.1
 
@@ -100,13 +106,37 @@ shader_parameter/shake_speed = 5.0
 shader_parameter/shake_block_size = 30.5
 shader_parameter/shake_color_rate = 0.01
 
-[node name="Main" type="Node3D"]
+[node name="Main" type="Node3D" node_paths=PackedStringArray("ui_manager", "music_manager")]
 script = ExtResource("1_2sl5s")
+ui_manager = NodePath("Logic/UIManager")
+music_manager = NodePath("Logic/MusicManager")
 
-[node name="Music" type="Node" parent="."]
+[node name="Logic" type="Node" parent="."]
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Music"]
-stream = ExtResource("2_xgi2y")
+[node name="UIManager" type="Node" parent="Logic" node_paths=PackedStringArray("label_1", "label_2", "ui_fade_in_animation")]
+script = ExtResource("2_b5m0v")
+label_1 = NodePath("../../UI/CenterContainer/CanvasLayer2/VBoxContainer/Label1")
+label_2 = NodePath("../../UI/CenterContainer/CanvasLayer2/VBoxContainer/Label2")
+ui_fade_in_animation = NodePath("../../UI/UIFadeInAnimation")
+
+[node name="SignalManager" type="Node" parent="Logic"]
+script = ExtResource("3_kexe0")
+
+[node name="MusicManager" type="Node" parent="Logic" node_paths=PackedStringArray("music_player", "ui_manager", "tween_manager", "mesh_manager")]
+script = ExtResource("4_8xiw3")
+music_player = NodePath("../../World/MusicPlayer")
+ui_manager = NodePath("../UIManager")
+tween_manager = NodePath("../TweenManager")
+mesh_manager = NodePath("../MeshManager")
+bpm = 180
+
+[node name="TweenManager" type="Node" parent="Logic" node_paths=PackedStringArray("mesh_manager")]
+script = ExtResource("5_4yxqp")
+mesh_manager = NodePath("../MeshManager")
+
+[node name="MeshManager" type="Node" parent="Logic" node_paths=PackedStringArray("box_mesh")]
+script = ExtResource("6_e2gjd")
+box_mesh = NodePath("../../World/BoxMesh")
 
 [node name="World" type="Node" parent="."]
 
@@ -129,14 +159,18 @@ libraries = {
 "": SubResource("AnimationLibrary_7bo0g")
 }
 
-[node name="CSGBox3D" type="CSGBox3D" parent="World"]
-material = SubResource("StandardMaterial3D_y6wwj")
+[node name="BoxMesh" type="CSGBox3D" parent="World"]
+material = SubResource("StandardMaterial3D_jewe4")
 
 [node name="SpotLight3D" type="SpotLight3D" parent="World"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.08504)
+light_color = Color(0.160784, 0.0117647, 0.376471, 1)
 light_energy = 2.985
 light_indirect_energy = 7.984
 spot_attenuation = -7.55
+
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="World"]
+stream = ExtResource("2_xgi2y")
 
 [node name="UI" type="Node" parent="."]
 
@@ -192,7 +226,7 @@ offset_left = -332.0
 offset_right = 896.0
 offset_bottom = 334.0
 
-[node name="Label" type="Label" parent="UI/CenterContainer/CanvasLayer2/VBoxContainer"]
+[node name="Label1" type="Label" parent="UI/CenterContainer/CanvasLayer2/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 60
 text = "test"
@@ -210,4 +244,4 @@ anchor_bottom = 1.0
 offset_right = 181.0
 grow_vertical = 2
 
-[connection signal="pressed" from="UI/CenterContainer/CanvasLayer1/PanelContainer/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="UI/CenterContainer/CanvasLayer1/PanelContainer/Button" to="Logic/UIManager" method="_on_button_pressed"]
