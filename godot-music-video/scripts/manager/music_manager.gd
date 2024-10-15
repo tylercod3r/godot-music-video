@@ -20,8 +20,8 @@ enum SyncSource {
 	SOUND_CLOCK,
 }
 
-var playing = false
 var sync_source = SyncSource.SYSTEM_CLOCK
+var playing = false
 var time_begin
 var time_delay
 var beat_number_old
@@ -66,6 +66,12 @@ func handle_beat(beat_number):
 	# handle color + scale fx
 	var color = Color(0, 0, 0, 1)
 	var scaleVal = 1.0
+	
+	# init random mesh
+	var val = randi_range(1, len(mesh_manager.box_meshes))
+	tween_manager.init(mesh_manager.box_meshes[val - 1])
+	
+	# tween + color
 	match beat_this_bar:
 		1:
 			color = Color(0, 0.726, 0.726)
@@ -92,7 +98,7 @@ func handle_beat(beat_number):
 					else:
 						tween_manager.rotate_y_right()
 	
-	mesh_manager.color_box(color)
+	#mesh_manager.color_box(color)
 
 func get_beat_number() -> int:
 	var time = 0.0

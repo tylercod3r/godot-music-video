@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://bj4gpou1y72ex"]
+[gd_scene load_steps=33 format=3 uid="uid://bj4gpou1y72ex"]
 
 [ext_resource type="Script" path="res://scripts/main-controller.gd" id="1_2sl5s"]
 [ext_resource type="Script" path="res://scripts/manager/ui_manager.gd" id="2_b5m0v"]
@@ -11,6 +11,7 @@
 [ext_resource type="Shader" path="res://shaders/glitch.gdshader" id="5_7h1s4"]
 [ext_resource type="Theme" uid="uid://0yjds1juqap4" path="res://themes/app_theme.tres" id="5_h2gwk"]
 [ext_resource type="Script" path="res://scripts/manager/mesh_manager.gd" id="6_e2gjd"]
+[ext_resource type="Shader" path="res://shaders/ripple.gdshader" id="7_28e6x"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_s340l"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -31,6 +32,7 @@ sdfgi_enabled = true
 glow_enabled = true
 glow_bloom = 1.0
 fog_light_energy = 13.0
+adjustment_enabled = true
 
 [sub_resource type="Environment" id="Environment_xh2lt"]
 background_mode = 1
@@ -43,8 +45,16 @@ _data = {
 "new_animation": SubResource("Animation_382cc")
 }
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_5dtj2"]
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_dmyv3"]
+next_pass = SubResource("ParticleProcessMaterial_5dtj2")
+emission_enabled = true
+emission = Color(0.15, 0.51, 0.75, 1)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jewe4"]
-albedo_color = Color(0.0705882, 0.184314, 1, 1)
+transparency = 1
+albedo_color = Color(0.1232, 0.16016, 0.44, 1)
 emission_enabled = true
 emission = Color(0.0352941, 0.592157, 0.811765, 1)
 
@@ -90,6 +100,21 @@ shader_parameter/max_drag_distance = 0.692
 shader_parameter/samples = 30
 shader_parameter/contrast = 1.912
 
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_gm2pu"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_qki6t"]
+seamless = true
+noise = SubResource("FastNoiseLite_gm2pu")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_438x3"]
+shader = ExtResource("7_28e6x")
+shader_parameter/frequency = 9.33
+shader_parameter/amplitude = 0.8
+shader_parameter/ripple_rate = 1.0
+shader_parameter/wave_amplitude = 0.01
+shader_parameter/wave_frequency = 0.0
+shader_parameter/noise = SubResource("NoiseTexture2D_qki6t")
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_f8aco"]
 shader = ExtResource("4_1vr0w")
 shader_parameter/alpha = 0.5
@@ -98,10 +123,12 @@ shader_parameter/outer_radius = 1.1
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dmta4"]
 
+[sub_resource type="SystemFont" id="SystemFont_xgiko"]
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_le7fq"]
 shader = ExtResource("5_7h1s4")
 shader_parameter/shake_power = 0.03
-shader_parameter/shake_rate = 0.2
+shader_parameter/shake_rate = 0.05
 shader_parameter/shake_speed = 5.0
 shader_parameter/shake_block_size = 30.5
 shader_parameter/shake_color_rate = 0.01
@@ -134,9 +161,9 @@ bpm = 180
 script = ExtResource("5_4yxqp")
 mesh_manager = NodePath("../MeshManager")
 
-[node name="MeshManager" type="Node" parent="Logic" node_paths=PackedStringArray("box_mesh")]
+[node name="MeshManager" type="Node" parent="Logic" node_paths=PackedStringArray("box_meshes")]
 script = ExtResource("6_e2gjd")
-box_mesh = NodePath("../../World/BoxMesh")
+box_meshes = [NodePath("../../World/BoxMesh1"), NodePath("../../World/BoxMesh2"), NodePath("../../World/BoxMesh3")]
 
 [node name="World" type="Node" parent="."]
 
@@ -151,7 +178,7 @@ light_indirect_energy = 8.0
 shadow_enabled = true
 
 [node name="Camera3D" type="Camera3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.2)
 environment = SubResource("Environment_xh2lt")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="World"]
@@ -159,14 +186,22 @@ libraries = {
 "": SubResource("AnimationLibrary_7bo0g")
 }
 
-[node name="BoxMesh" type="CSGBox3D" parent="World"]
+[node name="BoxMesh1" type="CSGBox3D" parent="World"]
+material = SubResource("ORMMaterial3D_dmyv3")
+
+[node name="BoxMesh2" type="CSGBox3D" parent="World"]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, -1, 0, 0)
+material = SubResource("StandardMaterial3D_jewe4")
+
+[node name="BoxMesh3" type="CSGBox3D" parent="World"]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 1, 0, 0)
 material = SubResource("StandardMaterial3D_jewe4")
 
 [node name="SpotLight3D" type="SpotLight3D" parent="World"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.08504)
-light_color = Color(0.160784, 0.0117647, 0.376471, 1)
-light_energy = 2.985
-light_indirect_energy = 7.984
+light_color = Color(0.140213, 0.0264, 0.88, 1)
+light_energy = 16.0
+light_indirect_energy = 2.0
 spot_attenuation = -7.55
 
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="World"]
@@ -188,6 +223,14 @@ offset_bottom = 40.0
 
 [node name="ColorRect" type="ColorRect" parent="UI/CenterContainer/CanvasLayer1"]
 material = SubResource("ShaderMaterial_20lon")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect3" type="ColorRect" parent="UI/CenterContainer/CanvasLayer1"]
+material = SubResource("ShaderMaterial_438x3")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -217,31 +260,36 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_dmta4")
 [node name="Button" type="Button" parent="UI/CenterContainer/CanvasLayer1/PanelContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 60
-text = "start"
+text = ">"
 
 [node name="CanvasLayer2" type="CanvasLayer" parent="UI/CenterContainer"]
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/CenterContainer/CanvasLayer2"]
 offset_left = -332.0
 offset_right = 896.0
-offset_bottom = 334.0
+offset_bottom = 202.0
+alignment = 1
 
 [node name="Label1" type="Label" parent="UI/CenterContainer/CanvasLayer2/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 60
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_fonts/font = SubResource("SystemFont_xgiko")
+theme_override_font_sizes/font_size = 40
 text = "test"
 metadata/_edit_use_anchors_ = true
 
 [node name="Label2" type="Label" parent="UI/CenterContainer/CanvasLayer2/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 60
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_fonts/font = SubResource("SystemFont_xgiko")
+theme_override_font_sizes/font_size = 40
 text = "test2"
 
 [node name="ColorRect" type="ColorRect" parent="UI/CenterContainer/CanvasLayer2"]
 material = SubResource("ShaderMaterial_le7fq")
 anchors_preset = 9
 anchor_bottom = 1.0
-offset_right = 181.0
+offset_right = 123.0
 grow_vertical = 2
 
 [connection signal="pressed" from="UI/CenterContainer/CanvasLayer1/PanelContainer/Button" to="Logic/UIManager" method="_on_button_pressed"]

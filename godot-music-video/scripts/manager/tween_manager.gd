@@ -12,37 +12,32 @@ var rotate_y_right_tween:Tween
 var rotate_xy_tween:Tween
 #endregion
 
-#region METHOD - NATIVE
-func _ready():
-	init()
-#endregion
-
 #region METHOD - INIT
-func init() -> void:
-	init_scale_tween_normal()
-	init_scale_tween_large()
+func init(box_mesh:CSGBox3D) -> void:
+	init_scale_tween_normal(box_mesh)
+	init_scale_tween_large(box_mesh)
 
-	init_rotate_x_left_tween()
-	init_rotate_x_right_tween()
+	init_rotate_x_left_tween(box_mesh)
+	init_rotate_x_right_tween(box_mesh)
 	
-	init_rotate_y_left_tween()
-	init_rotate_y_right_tween()
+	init_rotate_y_left_tween(box_mesh)
+	init_rotate_y_right_tween(box_mesh)
 
-	init_rotate_xy_tween()
+	init_rotate_xy_tween(box_mesh)
 
-func init_scale_tween_normal() -> void:
-	scale_tween_normal = TweenNode.create_reusable_tween()
+func init_scale_tween_normal(mesh) -> void:
 	var scale_val = 1.0
-	scale_tween_normal.tween_property(mesh_manager.box_mesh, "scale", Vector3(scale_val, scale_val, scale_val), 0.1)
-
-func init_scale_tween_large() -> void:
-	scale_tween_large = TweenNode.create_reusable_tween()
-	var scale_val = 1.25
-	scale_tween_large.tween_property(mesh_manager.box_mesh, "scale", Vector3(scale_val, scale_val, scale_val), 0.3)
-
-func init_rotate_x_left_tween() -> void:
-	rotate_x_left_tween = TweenNode.create_reusable_tween()
 	
+	scale_tween_normal = TweenNode.create_reusable_tween()
+	scale_tween_normal.tween_property(mesh, "scale", Vector3(scale_val, scale_val, scale_val), 0.1)
+
+func init_scale_tween_large(mesh) -> void:
+	var scale_val = 1.25
+	
+	scale_tween_large = TweenNode.create_reusable_tween()
+	scale_tween_large.tween_property(mesh, "scale", Vector3(scale_val, scale_val, scale_val), 0.1)
+
+func init_rotate_x_left_tween(mesh) -> void:
 	var x_degrees: float = -360 
 	var y_degrees: float = 0
 	var z_degrees: float = 0
@@ -53,11 +48,10 @@ func init_rotate_x_left_tween() -> void:
 		deg_to_rad(z_degrees)
 	)
 	
-	rotate_x_left_tween.tween_property(mesh_manager.box_mesh, "rotation", target_rotation, 0.3).as_relative()
+	rotate_x_left_tween = TweenNode.create_reusable_tween()
+	rotate_x_left_tween.tween_property(mesh, "rotation", target_rotation, 0.4).as_relative()
 
-func init_rotate_x_right_tween() -> void:
-	rotate_x_right_tween = TweenNode.create_reusable_tween()
-	
+func init_rotate_x_right_tween(mesh) -> void:
 	var x_degrees = 360 
 	var y_degrees = 0
 	var z_degrees = 0
@@ -68,11 +62,10 @@ func init_rotate_x_right_tween() -> void:
 		deg_to_rad(z_degrees)
 	)
 	
-	rotate_x_right_tween.tween_property(mesh_manager.box_mesh, "rotation", target_rotation, 0.3).as_relative()
+	rotate_x_right_tween = TweenNode.create_reusable_tween()
+	rotate_x_right_tween.tween_property(mesh, "rotation", target_rotation, 0.4).as_relative()
 
-func init_rotate_y_left_tween() -> void:
-	rotate_y_left_tween = TweenNode.create_reusable_tween()
-	
+func init_rotate_y_left_tween(mesh) -> void:
 	var x_degrees = 0 
 	var y_degrees = -45
 	var z_degrees = 0
@@ -83,11 +76,10 @@ func init_rotate_y_left_tween() -> void:
 		deg_to_rad(z_degrees)
 	)
 	
-	rotate_y_left_tween.tween_property(mesh_manager.box_mesh, "rotation", target_rotation, 0.1).as_relative()
+	rotate_y_left_tween = TweenNode.create_reusable_tween()
+	rotate_y_left_tween.tween_property(mesh, "rotation", target_rotation, 0.4).as_relative()
 	
-func init_rotate_y_right_tween() -> void:
-	rotate_y_right_tween = TweenNode.create_reusable_tween()
-	
+func init_rotate_y_right_tween(mesh) -> void:
 	var x_degrees = 0 
 	var y_degrees = 45
 	var z_degrees = 0
@@ -98,11 +90,10 @@ func init_rotate_y_right_tween() -> void:
 		deg_to_rad(z_degrees)
 	)
 	
-	rotate_y_right_tween.tween_property(mesh_manager.box_mesh, "rotation", target_rotation, 0.1).as_relative()
+	rotate_y_right_tween = TweenNode.create_reusable_tween()
+	rotate_y_right_tween.tween_property(mesh, "rotation", target_rotation, 0.4).as_relative()
 
-func init_rotate_xy_tween() -> void:
-	rotate_xy_tween = TweenNode.create_reusable_tween()
-	
+func init_rotate_xy_tween(mesh) -> void:
 	var x_degrees = -360 
 	var y_degrees = 45
 	var z_degrees = 0
@@ -113,7 +104,8 @@ func init_rotate_xy_tween() -> void:
 		deg_to_rad(z_degrees)
 	)
 	
-	rotate_xy_tween.tween_property(mesh_manager.box_mesh, "rotation", target_rotation, 0.4).as_relative()
+	rotate_xy_tween = TweenNode.create_reusable_tween()
+	rotate_xy_tween.tween_property(mesh, "rotation", target_rotation, 0.4).as_relative()
 #endregion
 
 #region METHOD - PLAY
