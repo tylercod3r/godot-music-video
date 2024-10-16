@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" path="res://scripts/main-controller.gd" id="1_2sl5s"]
 [ext_resource type="Script" path="res://scripts/manager/ui_manager.gd" id="2_b5m0v"]
-[ext_resource type="AudioStream" uid="uid://b4n4hcinxc4pb" path="res://assets/music/iffiii--new-dnb-v1.mp3" id="2_xgi2y"]
 [ext_resource type="Shader" path="res://shaders/radial.gdshader" id="3_jj8qv"]
 [ext_resource type="Script" path="res://scripts/manager/signal_manager.gd" id="3_kexe0"]
 [ext_resource type="Shader" path="res://shaders/vignette.gdshader" id="4_1vr0w"]
@@ -11,6 +10,7 @@
 [ext_resource type="Shader" path="res://shaders/glitch.gdshader" id="5_7h1s4"]
 [ext_resource type="Theme" uid="uid://0yjds1juqap4" path="res://themes/app_theme.tres" id="5_h2gwk"]
 [ext_resource type="Script" path="res://scripts/manager/mesh_manager.gd" id="6_e2gjd"]
+[ext_resource type="AudioStream" uid="uid://epbxps1reyui" path="res://assets/music/iffiii--regolith-skip-d-minor-v3.mp3" id="7_7rr5q"]
 [ext_resource type="Shader" path="res://shaders/ripple.gdshader" id="7_28e6x"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_s340l"]
@@ -205,7 +205,7 @@ light_indirect_energy = 2.0
 spot_attenuation = -7.55
 
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="World"]
-stream = ExtResource("2_xgi2y")
+stream = ExtResource("7_7rr5q")
 
 [node name="UI" type="Node" parent="."]
 
