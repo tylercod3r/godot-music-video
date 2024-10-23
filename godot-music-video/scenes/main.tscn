@@ -10,8 +10,8 @@
 [ext_resource type="Shader" path="res://shaders/glitch.gdshader" id="5_7h1s4"]
 [ext_resource type="Theme" uid="uid://0yjds1juqap4" path="res://themes/app_theme.tres" id="5_h2gwk"]
 [ext_resource type="Script" path="res://scripts/manager/mesh_manager.gd" id="6_e2gjd"]
-[ext_resource type="AudioStream" uid="uid://epbxps1reyui" path="res://assets/music/iffiii--regolith-skip-d-minor-v3.mp3" id="7_7rr5q"]
 [ext_resource type="Shader" path="res://shaders/ripple.gdshader" id="7_28e6x"]
+[ext_resource type="AudioStream" uid="uid://dnluqhncweq4k" path="res://assets/music/iffiii--regolith-skip-v6.mp3" id="7_vx7bv"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_s340l"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -167,6 +167,9 @@ box_meshes = [NodePath("../../World/BoxMesh1"), NodePath("../../World/BoxMesh2")
 
 [node name="World" type="Node" parent="."]
 
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="World"]
+stream = ExtResource("7_vx7bv")
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="World"]
 environment = SubResource("Environment_sg55c")
 
@@ -203,9 +206,6 @@ light_color = Color(0.140213, 0.0264, 0.88, 1)
 light_energy = 16.0
 light_indirect_energy = 2.0
 spot_attenuation = -7.55
-
-[node name="MusicPlayer" type="AudioStreamPlayer" parent="World"]
-stream = ExtResource("7_7rr5q")
 
 [node name="UI" type="Node" parent="."]
 
