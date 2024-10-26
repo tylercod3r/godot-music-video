@@ -1,12 +1,9 @@
 class_name MusicManager extends Node
 
-# song length = 704 beats
-
 #region VARIABLE
 @export var music_player: AudioStreamPlayer
 @export var ui_manager: UIManager
-@export var tween_manager: TweenManager
-@export var mesh_manager:MeshManager
+@export var animation_manager:AnimationManager
 
 @export var bpm:int
 
@@ -35,7 +32,7 @@ func _process(_delta):
 	handle_beat(get_beat_number()) 
 #endregion
 
-#region METHOD - UTIL
+#region METHOD - MUSIC
 func start_music() -> void:
 	sync_source = SyncSource.SYSTEM_CLOCK
 	time_begin = Time.get_ticks_usec()
@@ -43,63 +40,26 @@ func start_music() -> void:
 	playing = true
 	music_player.play()
 	
-func handle_beat(beat_number):
-	#print(beat_number)
+func handle_beat(beat_index):
+	# debug
+	#print(beat_index)
 	
 	# sanitize
-	if beat_number == beat_number_old:
+	if beat_index == beat_number_old:
 		return
 	else:
-		beat_number_old = beat_number
+		beat_number_old = beat_index
 	
-	var beat_this_bar = beat_number % BARS + 1
+	# get beat this bar
+	var beat_this_bar = beat_index % BARS + 1
 	
 	# update labels
-	ui_manager.set_label_text(str(beat_this_bar), str(beat_number + 1))
+	ui_manager.set_label_text(str(beat_this_bar), str(beat_index))
 	
-	# handle empty beats
-	if beat_number in range(54, 64):
-		return
-	if beat_number > 674:
-		return
-	
-	# handle color + scale fx
-	var color = Color(0, 0, 0, 1)
-	var scaleVal = 1.0
-	
-	# init random mesh
-	var val = randi_range(1, len(mesh_manager.box_meshes))
-	tween_manager.init(mesh_manager.box_meshes[val - 1])
-	
-	# tween + color
-	match beat_this_bar:
-		1:
-			color = Color(0, 0.726, 0.726)
-			tween_manager.scale_normal()
-		2:
-			color = Color(0.5, 0.5, 0.5, 1)
-		3:
-			color = Color(0, 0, 0, 1)
-		4: 
-			color = Color(0, 0, 1, 1)
-			tween_manager.scale_large()
+	# animate
+	animation_manager.animate_to_beat(beat_index, beat_this_bar)
 
-			if (beat_number + 1) % 32 == 0:
-				if randf() < 0.5:
-					tween_manager.rotate_x_left()
-				else:
-					tween_manager.rotate_x_right()
-			else:
-				if (beat_number + 1) % 16 == 0:
-					tween_manager.rotate_xy()
-				else:
-					if randf() < 0.5:
-						tween_manager.rotate_y_left()
-					else:
-						tween_manager.rotate_y_right()
-	
-	#mesh_manager.color_box(color)
-
+#region METHOD - UTIL
 func get_beat_number() -> int:
 	var time = 0.0
 	if sync_source == SyncSource.SYSTEM_CLOCK:

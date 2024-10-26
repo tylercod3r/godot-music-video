@@ -5,6 +5,6 @@ class_name MeshManager extends Node
 #endregion
 
 #region METHOD - UTIL
-#func color_box(color) -> void:
-	#box_meshes[0].material.albedo_color = color
+func color_box(color) -> void:
+	box_meshes[0].material.albedo_color = color
 #endregion

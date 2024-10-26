@@ -52,7 +52,7 @@ func init_rotate_x_left_tween(mesh) -> void:
 	rotate_x_left_tween.tween_property(mesh, "rotation", target_rotation, 0.4).as_relative()
 
 func init_rotate_x_right_tween(mesh) -> void:
-	var x_degrees = 360 
+	var x_degrees = 180 
 	var y_degrees = 0
 	var z_degrees = 0
 
@@ -94,9 +94,9 @@ func init_rotate_y_right_tween(mesh) -> void:
 	rotate_y_right_tween.tween_property(mesh, "rotation", target_rotation, 0.4).as_relative()
 
 func init_rotate_xy_tween(mesh) -> void:
-	var x_degrees = -360 
+	var x_degrees = -720 
 	var y_degrees = 45
-	var z_degrees = 0
+	var z_degrees = 45
 
 	var target_rotation = Vector3(
 		deg_to_rad(x_degrees),
@@ -105,7 +105,8 @@ func init_rotate_xy_tween(mesh) -> void:
 	)
 	
 	rotate_xy_tween = TweenNode.create_reusable_tween()
-	rotate_xy_tween.tween_property(mesh, "rotation", target_rotation, 0.4).as_relative()
+	rotate_xy_tween.set_trans(Tween.TRANS_SINE)
+	rotate_xy_tween.tween_property(mesh, "rotation", target_rotation, 5.0).as_relative()
 #endregion
 
 #region METHOD - PLAY

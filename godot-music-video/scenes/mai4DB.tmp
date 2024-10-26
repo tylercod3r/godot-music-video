@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://bj4gpou1y72ex"]
+[gd_scene load_steps=36 format=3 uid="uid://bj4gpou1y72ex"]
 
 [ext_resource type="Script" path="res://scripts/main-controller.gd" id="1_2sl5s"]
 [ext_resource type="Script" path="res://scripts/manager/ui_manager.gd" id="2_b5m0v"]
@@ -13,7 +13,6 @@
 [ext_resource type="Script" path="res://scripts/manager/mesh_manager.gd" id="6_e2gjd"]
 [ext_resource type="Shader" path="res://shaders/ripple.gdshader" id="7_28e6x"]
 [ext_resource type="AudioStream" uid="uid://dnluqhncweq4k" path="res://assets/music/iffiii--regolith-skip-v6.mp3" id="7_vx7bv"]
-[ext_resource type="Script" path="res://scripts/manager/animation_manager.gd" id="8_51ak5"]
 [ext_resource type="Shader" path="res://shaders/music-analyzer.gdshader" id="12_hrbnu"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_s340l"]
@@ -156,11 +155,12 @@ ui_fade_in_animation = NodePath("../../UI/UIFadeInAnimation")
 [node name="SignalManager" type="Node" parent="Logic"]
 script = ExtResource("3_kexe0")
 
-[node name="MusicManager" type="Node" parent="Logic" node_paths=PackedStringArray("music_player", "ui_manager", "animation_manager")]
+[node name="MusicManager" type="Node" parent="Logic" node_paths=PackedStringArray("music_player", "ui_manager", "tween_manager", "mesh_manager")]
 script = ExtResource("4_8xiw3")
 music_player = NodePath("../../World/MusicPlayer")
 ui_manager = NodePath("../UIManager")
-animation_manager = NodePath("../AnimationManager")
+tween_manager = NodePath("../TweenManager")
+mesh_manager = NodePath("../MeshManager")
 bpm = 180
 
 [node name="MusicAnalyzer" type="Node" parent="Logic" node_paths=PackedStringArray("color_rect")]
@@ -174,11 +174,6 @@ mesh_manager = NodePath("../MeshManager")
 [node name="MeshManager" type="Node" parent="Logic" node_paths=PackedStringArray("box_meshes")]
 script = ExtResource("6_e2gjd")
 box_meshes = [NodePath("../../World/BoxMesh1"), NodePath("../../World/BoxMesh2"), NodePath("../../World/BoxMesh3")]
-
-[node name="AnimationManager" type="Node" parent="Logic" node_paths=PackedStringArray("tween_manager", "mesh_manager")]
-script = ExtResource("8_51ak5")
-tween_manager = NodePath("../TweenManager")
-mesh_manager = NodePath("../MeshManager")
 
 [node name="World" type="Node" parent="."]
 
