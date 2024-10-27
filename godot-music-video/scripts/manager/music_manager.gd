@@ -58,6 +58,7 @@ func handle_beat(beat_index):
 	
 	# animate
 	animation_manager.animate_to_beat(beat_index, beat_this_bar)
+#endregion
 
 #region METHOD - UTIL
 func get_beat_number() -> int:
@@ -78,10 +79,21 @@ func get_beat_number() -> int:
 	#print(printDebug)
 	
 	return beat
-	
+
+func get_beat_segment_time(target_beat_count_length:int) -> float:
+	return 60.0 / bpm * target_beat_count_length 
+
 func str_to_sec(secs):
 	var s = str(secs)
 	if (secs < 10):
 		s = "0" + s
 	return s
+	
+func get_random_chance_multiplier() -> int:
+	var chance_multiplier = 1
+	var random_value = randi_range(0, 1)
+	if random_value == 0:
+		chance_multiplier = -1
+		
+	return chance_multiplier
 #endregion

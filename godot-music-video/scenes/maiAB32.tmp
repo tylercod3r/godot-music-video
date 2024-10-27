@@ -167,9 +167,8 @@ bpm = 180
 script = ExtResource("5_dl47c")
 color_rect = NodePath("../../UI/CenterContainer/CanvasLayer1/ColorRect4")
 
-[node name="TweenManager" type="Node" parent="Logic" node_paths=PackedStringArray("music_manager", "mesh_manager", "camera_node")]
+[node name="TweenManager" type="Node" parent="Logic" node_paths=PackedStringArray("mesh_manager", "camera_node")]
 script = ExtResource("5_4yxqp")
-music_manager = NodePath("../MusicManager")
 mesh_manager = NodePath("../MeshManager")
 camera_node = NodePath("../../World/Camera3D")
 

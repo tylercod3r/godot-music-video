@@ -18,25 +18,26 @@ func animate_to_beat(beat_number:int, beat_this_bar:int) -> void:
 	if beat_number > 654:
 		return
 
-	# handle 16-count
-	if beat_number % 16 == 0:
-		tween_manager.init(mesh_manager.box_meshes[0])
-		
+	# handle 128-count
+	if beat_number % 128 == 0:
 		color = Color(0, 1, 0, 1)
+		
+		tween_manager.init(mesh_manager.box_meshes[0])
 		tween_manager.scale_large()
-		tween_manager.rotate_x_right()
+		#tween_manager.rotate_x_right()
 		#tween_manager.rotate_xy()
+		tween_manager.camera_random_rotate()
 	
-	# handle 8-count
-	elif beat_number % 8 == 0:
+	# handle 16-count
+	elif beat_number % 16 == 0:
+		color = Color(0.3, 0.3, 1, 1)
+		
 		var val = randi_range(2, len(mesh_manager.box_meshes))
 		tween_manager.init(mesh_manager.box_meshes[val - 1])
-		
-		color = Color(0.4, 0.4, 1, 1)
 		tween_manager.scale_normal()
 		#tween_manager.rotate_x_right()
 		tween_manager.rotate_xy()
 	
-	# finalize fx
+	# finalize color
 	mesh_manager.color_box(color)
 #endregion
